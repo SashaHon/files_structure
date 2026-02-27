@@ -1,15 +1,8 @@
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import type { FlatNode, FolderPath } from "../types/shared";
 
 const API_URL = "http://localhost:3001/api/data";
-
-export type FlatNode = {
-  id: string;
-  type: "folder" | "file";
-  childrenIds?: string[];
-};
-
-type FolderPath = string | string[] | undefined;
 
 async function fetchByPath(path: string): Promise<FlatNode[]> {
   const url = path ? `${API_URL}/${path}` : API_URL;

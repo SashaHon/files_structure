@@ -30,18 +30,13 @@ import { computed, inject } from "vue";
 import type { Ref } from "vue";
 import BaseFile from "./File.vue";
 import BaseFolder from "./Folder.vue";
+import type { FlatNode } from "../../types/shared";
 
 const props = defineProps<{
   title: string;
   childrenIds: string[] | undefined;
   path: string; // full path, e.g. "movies" or "movies/Avengers"
 }>();
-
-type FlatNode = {
-  id: string;
-  type: "folder" | "file";
-  childrenIds?: string[];
-};
 
 const expandedData = inject<Ref<Map<string, FlatNode[]>>>("expandedData")!;
 
