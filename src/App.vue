@@ -3,7 +3,7 @@ import MainScreen from "./components/Main/Screen.vue";
 </script>
 
 <template>
-  <MainScreen />
+  <router-view />
 </template>
 
 <style scoped>
