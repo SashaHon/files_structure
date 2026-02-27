@@ -27,81 +27,62 @@ type resultFlatNodes = {
   depthLevel: number;
 } | null;
 
-function getNodeById(node: Node, id: string): Node | null {
-  if (!node) return null;
-
-  let result: resultFlatNodes = null;
-  let flatNodes: Array<FlatNode> = [];
-  let depthLevel = 0;
-
-  if (!id || id === ROOT_NODE_ID) {
-    // console.log("ROOT NODE: ", node);
-    flatNodes = Object.entries(node).map(([key, value]) => ({
-      id: key,
-      type: value.type,
-      childrenIds: value.children ? Object.keys(value.children) : undefined,
-    }));
-    depthLevel = 1;
-
-    result = {
-      flatNodes,
-      depthLevel,
-    };
-
-    return result;
-  }
-
-  for (const key in node) {
-    console.log("node: ", node);
-
-    if (key === id) {
-      console.log("key: ", key);
-
-      flatNodes = Object.entries(node[key].children ?? {}).map(
-        ([childKey, childValue]) => ({
-          id: childKey,
-          type: childValue.type,
-          childrenIds: childValue.children
-            ? Object.keys(childValue.children)
-            : undefined,
-        }),
-      );
-
-      depthLevel += 1;
-
-      result = {
-        flatNodes,
-        depthLevel,
-      };
-
-      console.log("result: ", result);
-      return result;
+// Traverse by folderPath
+function getNodeByPath(
+  node: Node,
+  path: string[],
+): { node: Node | null; depthLevel: number } {
+  let current = node;
+  let depthLevel = 1;
+  for (const key of path) {
+    if (!current.children || !current.children[key]) {
+      return { node: null, depthLevel };
     }
+    current = current.children[key];
+    depthLevel++;
   }
-  return null;
+  return { node: current, depthLevel };
 }
 
 app.get("/", (req, res) => {
   res.send("Server is running. Try /api/data");
 });
 
+// Root: return first-level children
 app.get("/api/data", (req, res) => {
-  const node = getNodeById(data.root);
-  res.json({
-    flatNodes: node?.flatNodes ?? [],
-    depthLevel: node?.depthLevel ?? 0,
-  });
+  const flatNodes = Object.entries(data.root).map(([key, value]) => ({
+    id: key,
+    type: value.type,
+    childrenIds: value.children ? Object.keys(value.children) : undefined,
+  }));
+  res.json({ flatNodes, depthLevel: 1 });
 });
 
-app.get("/api/data/:id", (req, res) => {
-  const { id } = req.params;
+// Nested path: return children and depth level of the specified folder
+app.get("/api/data/*id", (req, res) => {
+  const raw = req.params.id;
+  const path = Array.isArray(raw)
+    ? raw.flatMap((s: string) => s.split("/")).filter(Boolean)
+    : raw
+      ? String(raw).split("/").filter(Boolean)
+      : [];
 
-  const node = getNodeById(data.root, id);
-  // console.log("NODE: ", node);
-  res.json({
-    flatNodes: node?.flatNodes ?? [],
-    depthLevel: node?.depthLevel ?? 0,
-  });
+  console.log("Raw path param: ", raw);
+  console.log("Requested path: ", path);
+
+  const rootNode: Node = { type: "folder", children: data.root };
+  const { node, depthLevel } = getNodeByPath(rootNode, path);
+  if (!node) {
+    return res.status(404).json({ error: "Not found" });
+  }
+  const flatNodes = node.children
+    ? Object.entries(node.children).map(([key, value]) => ({
+        id: key,
+        type: value.type,
+        childrenIds: value.children ? Object.keys(value.children) : undefined,
+      }))
+    : [];
+  res.json({ flatNodes, depthLevel });
 });
 
 app.listen(3001, () => {

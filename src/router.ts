@@ -8,10 +8,10 @@ const routes = [
     component: MainScreen,
   },
   {
-    path: "/:folderId",
+    path: "/:folderPath(.*)*",
     name: "Folder",
-    component: MainScreen, // You can swap this for a dedicated Folder view if needed
-    props: true,
+    component: MainScreen,
+    props: (route: any) => ({ folderPath: route.params.folderPath }),
   },
 ];
 

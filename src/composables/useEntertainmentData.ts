@@ -25,8 +25,8 @@ export function useEntertainmentData() {
     isLoading.value = true;
     error.value = null;
 
-    const { folderId } = route.params;
-    const currentApiUrl = folderId ? `${API_URL}/${folderId}` : API_URL;
+    const { folderPath } = route.params;
+    const currentApiUrl = folderPath ? `${API_URL}/${folderPath}` : API_URL;
 
     try {
       const response = await fetch(currentApiUrl);
