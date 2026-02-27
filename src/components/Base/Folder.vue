@@ -1,5 +1,5 @@
 <template>
-  <div @click="onFolderClick(title, childrenIds)">
+  <div>
     <span> FOLDER: {{ title }}</span>
     <span v-if="childrenIds && childrenIds.length">
       ({{ childrenIds.length }} items)</span
@@ -10,7 +10,7 @@
       v-for="childId in childrenIds"
       :key="childId"
       :title="childId"
-      :childrenIds="[]"
+      :childrenIds
       :showChildren
     />
   </div>
@@ -24,23 +24,23 @@ const props = defineProps<{
   showChildren: boolean;
 }>();
 
-const showChildren = ref(false);
-function onFolderClick(
-  folderId: string,
-  childrenIds: Array<string> | undefined,
-) {
-  showChildren.value = !showChildren.value;
-  console.log("Clicked folder ID:", props.title);
-  console.log("Children IDs:", props.childrenIds);
-  console.log("Show children:", showChildren.value);
+// const showChildren = ref(false);
+// function onFolderClick(
+//   folderId: string,
+//   childrenIds: Array<string> | undefined,
+// ) {
+//   showChildren.value = !showChildren.value;
+//   console.log("Clicked folder ID:", props.title);
+//   console.log("Children IDs:", props.childrenIds);
+//   console.log("Show children:", showChildren.value);
 
-  // I need to make an API call here to fetch the children of the folder with the given ID
-}
+//   // I need to make an API call here to fetch the children of the folder with the given ID
+// }
 
-watch(
-  () => props.showChildren,
-  (newValue) => {
-    console.log("Show children for folder", props.title, ":", newValue);
-  },
-);
+// watch(
+//   () => props.showChildren,
+//   (newValue) => {
+//     console.log("Show children for folder", props.title, ":", newValue);
+//   },
+// );
 </script>

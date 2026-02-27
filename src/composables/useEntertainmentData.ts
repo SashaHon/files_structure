@@ -1,4 +1,5 @@
 import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 // type ItemType = "folder" | "file";
 
@@ -18,12 +19,17 @@ export function useEntertainmentData() {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
+  const route = useRoute();
+
   const fetchEntertainmentData = async () => {
     isLoading.value = true;
     error.value = null;
 
+    const { folderId } = route.params;
+    const currentApiUrl = folderId ? `${API_URL}/${folderId}` : API_URL;
+
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(currentApiUrl);
 
       if (!response.ok) {
         throw new Error(`Request failed with status ${response.status}`);
@@ -31,7 +37,7 @@ export function useEntertainmentData() {
 
       const responseData = await response.json();
       data.value = responseData;
-    } catch {
+    } catch (err) {
       error.value = "Failed to load entertainment data from server.";
     } finally {
       isLoading.value = false;

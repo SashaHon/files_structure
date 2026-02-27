@@ -35,7 +35,7 @@ function getNodeById(node: Node, id: string): Node | null {
   let depthLevel = 0;
 
   if (!id || id === ROOT_NODE_ID) {
-    console.log("ROOT NODE: ", node);
+    // console.log("ROOT NODE: ", node);
     flatNodes = Object.entries(node).map(([key, value]) => ({
       id: key,
       type: value.type,
@@ -52,11 +52,33 @@ function getNodeById(node: Node, id: string): Node | null {
   }
 
   for (const key in node) {
+    console.log("node: ", node);
+
     if (key === id) {
-      return node[key];
+      console.log("key: ", key);
+
+      flatNodes = Object.entries(node[key].children ?? {}).map(
+        ([childKey, childValue]) => ({
+          id: childKey,
+          type: childValue.type,
+          childrenIds: childValue.children
+            ? Object.keys(childValue.children)
+            : undefined,
+        }),
+      );
+
+      depthLevel += 1;
+
+      result = {
+        flatNodes,
+        depthLevel,
+      };
+
+      console.log("result: ", result);
+      return result;
     }
   }
-  return "cannot find node by id";
+  return null;
 }
 
 app.get("/", (req, res) => {
@@ -65,7 +87,10 @@ app.get("/", (req, res) => {
 
 app.get("/api/data", (req, res) => {
   const node = getNodeById(data.root);
-  res.json(node?.flatNodes ?? []);
+  res.json({
+    flatNodes: node?.flatNodes ?? [],
+    depthLevel: node?.depthLevel ?? 0,
+  });
 });
 
 app.get("/api/data/:id", (req, res) => {
@@ -73,7 +98,10 @@ app.get("/api/data/:id", (req, res) => {
 
   const node = getNodeById(data.root, id);
   // console.log("NODE: ", node);
-  res.json(node?.flatNodes ?? []);
+  res.json({
+    flatNodes: node?.flatNodes ?? [],
+    depthLevel: node?.depthLevel ?? 0,
+  });
 });
 
 app.listen(3001, () => {
