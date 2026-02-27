@@ -10,18 +10,20 @@
       </span>
     </span>
 
-    <!-- Render children when this folder is expanded -->
-    <ul v-if="expandedChildren" class="childrenList">
-      <li v-for="child in expandedChildren" :key="child.id">
-        <BaseFile v-if="child.type === 'file'" :title="child.id" />
-        <BaseFolder
-          v-else-if="child.type === 'folder'"
-          :title="child.id"
-          :childrenIds="child.childrenIds"
-          :path="`${path}/${child.id}`"
-        />
-      </li>
-    </ul>
+    <!-- Render children with transition when this folder is expanded -->
+    <Transition name="children-fade" mode="out-in">
+      <ul v-if="expandedChildren" class="childrenList">
+        <li v-for="child in expandedChildren" :key="child.id">
+          <BaseFile v-if="child.type === 'file'" :title="child.id" />
+          <BaseFolder
+            v-else-if="child.type === 'folder'"
+            :title="child.id"
+            :childrenIds="child.childrenIds"
+            :path="`${path}/${child.id}`"
+          />
+        </li>
+      </ul>
+    </Transition>
   </div>
 </template>
 
@@ -69,5 +71,24 @@ function handleClick() {
   list-style-type: none;
   padding-left: 36px;
   margin: 0;
+}
+
+/* Transition for children list: opacity + max-height */
+.children-fade-enter-active,
+.children-fade-leave-active {
+  transition:
+    opacity 0.3s,
+    max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.children-fade-enter-from,
+.children-fade-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+.children-fade-enter-to,
+.children-fade-leave-from {
+  opacity: 1;
+  max-height: 500px; /* Large enough for most folders */
 }
 </style>
