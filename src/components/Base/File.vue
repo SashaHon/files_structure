@@ -1,7 +1,5 @@
 <template>
-  <p>
-    <span> FILE: {{ title }}</span>
-  </p>
+  <p>File: {{ title }}</p>
 </template>
 
 <script setup lang="ts">
