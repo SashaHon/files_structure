@@ -2,7 +2,7 @@
   <div>
     <span>
       Folder:
-      <span class="clickable" @click="handleClick">
+      <span class="folderTitle" @click="handleClick">
         {{ title }}
         <span v-if="childrenIds && childrenIds.length">
           ({{ childrenIds.length }} items)
@@ -61,12 +61,18 @@ function handleClick() {
 </script>
 
 <style scoped>
-.clickable:hover {
+.folderTitle {
+  font-weight: bold;
   cursor: pointer;
-  color: #646cffaa;
 }
+
+.folderTitle:hover {
+  color: #646cff;
+}
+
 .childrenList {
   list-style-type: none;
-  padding-left: 1rem;
+  padding-left: 36px;
+  margin: 0;
 }
 </style>

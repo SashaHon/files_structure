@@ -1,6 +1,6 @@
 <template>
   <article v-if="rootNodes.length">
-    <h1>Entertainment</h1>
+    <h1>Entertainment list</h1>
 
     <ul class="list">
       <li v-for="item in rootNodes" :key="item.id">
@@ -35,5 +35,6 @@ provide("onFolderClick", onFolderClick);
 <style scoped>
 .list {
   list-style-type: none;
+  padding: 0;
 }
 </style>
