@@ -1,3 +1,11 @@
 <template>
-  <p>I'm file</p>
+  <p>
+    <span> FILE: {{ title }}</span>
+  </p>
 </template>
+
+<script setup lang="ts">
+const props = defineProps<{
+  title: string;
+}>();
+</script>

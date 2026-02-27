@@ -19,6 +19,7 @@ type Node = {
 type FlatNode = {
   id: string;
   type: ItemType;
+  childrenIds: Array<string> | undefined;
 };
 
 type resultFlatNodes = {
@@ -33,10 +34,12 @@ function getNodeById(node: Node, id: string): Node | null {
   let flatNodes: Array<FlatNode> = [];
   let depthLevel = 0;
 
-  if (id === ROOT_NODE_ID) {
+  if (!id || id === ROOT_NODE_ID) {
+    console.log("ROOT NODE: ", node);
     flatNodes = Object.entries(node).map(([key, value]) => ({
       id: key,
       type: value.type,
+      childrenIds: value.children ? Object.keys(value.children) : undefined,
     }));
     depthLevel = 1;
 
@@ -45,7 +48,6 @@ function getNodeById(node: Node, id: string): Node | null {
       depthLevel,
     };
 
-    console.log("ROOT NODE: !!XX!! ", result);
     return result;
   }
 
@@ -62,14 +64,15 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/data", (req, res) => {
-  res.json(data);
+  const node = getNodeById(data.root);
+  res.json(node?.flatNodes ?? []);
 });
 
 app.get("/api/data/:id", (req, res) => {
   const { id } = req.params;
 
   const node = getNodeById(data.root, id);
-  console.log("NODE: ", node);
+  // console.log("NODE: ", node);
   res.json(node?.flatNodes ?? []);
 });
 
